@@ -26,7 +26,7 @@ class HoshenKopelman:
                     else:
                         self.__union(x, y)
                         self.label[x, y] = self.label[x, y - 1]
-        pass
+        return self.label
 
     def __get_left(self, x, y):
         return self.grid[x - 1, y] if x - 1 >= 0 else 0
@@ -38,9 +38,3 @@ class HoshenKopelman:
         above = self.label[x, y - 1]
         left = self.label[x - 1, y]
         self.label = np.where(self.label == above, left, self.label)
-
-    def get_size_max_cluster(self):
-        self.search()
-        labels, counts = np.unique(self.label, return_counts=True)
-        labels, counts = labels[1:], counts[1:]
-        return np.max(counts) if len(counts) > 0 else 0

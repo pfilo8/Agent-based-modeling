@@ -12,7 +12,11 @@ def compute_is_burnt(model):
 def compute_max_cluster_size(model):
     grid = prepare_grid(model.grid.grid)
     hk = HoshenKopelman(grid)
-    return hk.get_size_max_cluster()
+    label = hk.search()
+    labels, counts = np.unique(label, return_counts=True)
+    clusters = dict(zip(labels, counts))
+    clusters.pop(0, None)  # Delete non-burnt tree cluster
+    return max(clusters.values(), default=0)
 
 
 def prepare_grid(grid):
