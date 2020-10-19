@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import numpy as np
 from mesa.batchrunner import BatchRunner
 
