@@ -12,11 +12,6 @@ class TreeAgent(Agent):
         self.state = self.STATE_GOOD
         self.state_future = None
 
-    def apply(self):
-        if self.state_future:
-            self.state = self.state_future
-            self.state_future = None
-
     def is_good(self):
         return self.state == self.STATE_GOOD
 
@@ -35,3 +30,8 @@ class TreeAgent(Agent):
                 if neighbor.is_good():
                     neighbor.set_fire()
             self.set_burnt()
+
+    def advance(self):
+        if self.state_future:
+            self.state = self.state_future
+            self.state_future = None
