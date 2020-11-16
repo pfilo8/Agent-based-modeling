@@ -13,6 +13,7 @@ class Config:
         self.dead_condition = self.json.get('dead_condition', [3])
         self.alive_char = self.json.get('alive_char', '0')
         self.dead_char = self.json.get('dead_char', '.')
+        self.max_iter = self.json.get('max_iter', 150)
 
     @staticmethod
     def parse_json(filename):

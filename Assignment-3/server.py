@@ -32,7 +32,8 @@ server = ModularServer(
         "alive_condition": config.alive_condition,
         "dead_condition": config.dead_condition,
         "alive_char": config.alive_char,
-        "dead_char": config.dead_char
+        "dead_char": config.dead_char,
+        "max_iter": config.max_iter
     }
 )
 server.launch()
