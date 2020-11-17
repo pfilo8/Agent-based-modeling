@@ -11,8 +11,8 @@ class Config:
         self.torus = self.json.get('torus', True)
         self.alive_condition = self.json.get('alive_condition', [2, 3])
         self.dead_condition = self.json.get('dead_condition', [3])
-        self.alive_char = self.json.get('alive_char', '0')
-        self.dead_char = self.json.get('dead_char', '.')
+        self.alive_char = self.json.get('alive_char')
+        self.dead_char = self.json.get('dead_char')
         self.max_iter = self.json.get('max_iter', 150)
 
     @staticmethod

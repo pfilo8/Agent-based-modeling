@@ -1,0 +1,5 @@
+{
+  "grid_filename": "configs/example-grid-3.txt",
+  "alive_condition": [2, 3, 4],
+  "dead_condition": [2]
+}

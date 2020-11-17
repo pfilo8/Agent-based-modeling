@@ -1,3 +1,4 @@
 {
-  "grid_filename": "configs/example-grid-1.txt"
+  "grid_filename": "configs/example-grid-1.txt",
+  "torus": false
 }

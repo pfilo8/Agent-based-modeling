@@ -51,8 +51,8 @@ class GridParser:
         counter = Counter(''.join(parsed_grid))
         if len(counter) > 2:
             raise ValueError(f'More than two values in grid file.')
-        alive_char = counter.most_common(2)[0][0]  # First record, char
-        dead_char = counter.most_common(2)[1][0]  # Second record, char
+        dead_char = counter.most_common(2)[0][0]  # First record, char
+        alive_char = counter.most_common(2)[1][0]  # Second record, char
         return alive_char, dead_char
 
     @staticmethod
