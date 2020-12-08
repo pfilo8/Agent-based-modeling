@@ -16,12 +16,13 @@ def agent_portrayal(agent):
     return portrayal
 
 
-height, width = 50, 50
-
+height, width = 100, 100
 populations = [
-    PopulationConfiguration("red", 400, 0.5),
-    PopulationConfiguration("blue", 400, 0.5)
+    PopulationConfiguration("red", 2000, 0.5),
+    PopulationConfiguration("blue", 2000, 0.5),
+    PopulationConfiguration("green", 2000, 0.5)
 ]
+neighborhood_radius = 2
 
 grid = CanvasGrid(agent_portrayal, height, width, 500, 500)
 server = ModularServer(
@@ -31,7 +32,8 @@ server = ModularServer(
     {
         "height": height,
         "width": width,
-        "populations": populations
+        "populations": populations,
+        "neighborhood_radius": neighborhood_radius
     }
 )
 server.launch()
