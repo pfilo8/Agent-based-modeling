@@ -3,6 +3,7 @@ from mesa.space import Grid
 from mesa.time import SimultaneousActivation
 
 from agent.Car import Car
+from metric import calculate_average_speed
 
 
 class NagelSchreckenbergModel(Model):
@@ -24,6 +25,8 @@ class NagelSchreckenbergModel(Model):
         self.iteration = 0
         self.running = True
 
+        self.custom_data_collector = []
+
     def place_agents(self):
         for i in range(self.car_amount):
             pos = self.grid.find_empty()
@@ -32,6 +35,7 @@ class NagelSchreckenbergModel(Model):
             self.schedule.add(agent)
 
     def step(self):
+        self.custom_data_collector.append(calculate_average_speed(self.schedule.agents))
         self.schedule.step()
         self.running = self.is_running()
         self.iteration += 1

@@ -15,9 +15,12 @@ params_variables = {
 batch_runner = BatchRunner(
     model,
     variable_parameters=params_variables,
-    iterations=50
+    iterations=100,
+    model_reporters={
+        "average_speed": lambda m: np.mean(m.custom_data_collector)
+    }
 )
 
 batch_runner.run_all()
 results = batch_runner.get_model_vars_dataframe()
-results.to_csv('output/simulation_results.csv', index=False)
+results.to_csv('outputs/simulation_results.csv', index=False)
