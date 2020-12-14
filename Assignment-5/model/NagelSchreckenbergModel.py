@@ -1,38 +1,40 @@
 from mesa import Model
-from mesa.space import SingleGrid
-from mesa.time import BaseScheduler
-
-from random import random
+from mesa.space import Grid
+from mesa.time import SimultaneousActivation
 
 from agent.Car import Car
 
-class CarModel(Model):
 
-    def __init__(self, height, width, dawdle_prob, car_amount):
+class NagelSchreckenbergModel(Model):
+    LINE_HEIGHT = 1
+    LINE_POS = 0
+
+    def __init__(self, line_length, randomization_prob, car_density, max_speed, max_steps=100):
         super().__init__()
-        self.height = height
-        self.width = width
-        self.dawdle_prob = dawdle_prob
-        self.car_amount = car_amount
+        self.line_length = line_length
+        self.randomization_prob = randomization_prob
+        self.car_amount = int(line_length * car_density)
+        self.max_speed = max_speed
 
-        self.schedule = BaseScheduler(self)
-        self.grid = SingleGrid(height, width, torus=True)
-
+        self.schedule = SimultaneousActivation(self)
+        self.grid = Grid(self.LINE_HEIGHT, line_length, torus=True)
         self.place_agents()
 
+        self.max_steps = max_steps
+        self.iteration = 0
         self.running = True
 
     def place_agents(self):
         for i in range(self.car_amount):
-            while True:
-                try:
-                    r = random()
-                    agent = Car((int(r*100), 5), self, 10)
-                    self.grid.position_agent(agent, int(r*100), 5)
-                    self.schedule.add(agent)
-                    break
-                except Exception:
-                    continue
+            pos = self.grid.find_empty()
+            agent = Car(pos, self, self.max_speed)
+            self.grid.place_agent(agent, pos)
+            self.schedule.add(agent)
 
     def step(self):
         self.schedule.step()
+        self.running = self.is_running()
+        self.iteration += 1
+
+    def is_running(self):
+        return self.iteration < self.max_steps

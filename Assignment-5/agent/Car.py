@@ -1,5 +1,7 @@
+import random
+
 from mesa import Agent
-from random import random
+
 
 class Car(Agent):
 
@@ -11,21 +13,27 @@ class Car(Agent):
         self.speed = 1
 
     def step(self):
+        self._accelerate()
+        self._slow_down()
+        self._randomization()
+
+    def _accelerate(self):
         if self.speed < self.max_speed:
             self.speed += 1
 
-        tmpX = self.pos[0] + 1
-        while True:
-            if not self.model.grid.is_cell_empty(self.model.grid.torus_adj((tmpX, self.pos[1]))):
-                break
-            tmpX += 1
-        if tmpX - self.pos[0] < self.speed:
-            self.speed = tmpX - self.pos[0]
+    def _slow_down(self):
+        for i in range(1, self.speed + 1):
+            theoretical_neighbour_pos = (self.model.LINE_POS, self.pos[1] + i)
+            real_neighbour_pos = self.model.grid.torus_adj(theoretical_neighbour_pos)
+            if not self.model.grid.is_cell_empty(real_neighbour_pos):
+                # The next position is not empty
+                self.speed = i - 1
 
-        if random() < self.model.dawdle_prob:
-            self.speed -= 1
-        self.move()
+    def _randomization(self):
+        if self.speed >= 1:
+            if random.random() < self.model.randomization_prob:
+                self.speed -= 1
 
-    def move(self):
-        if self.model.grid.is_cell_empty(self.model.grid.torus_adj((self.pos[0]+self.speed, self.pos[1]))):
-            self.model.grid.move_agent(self, self.model.grid.torus_adj((self.pos[0]+self.speed, self.pos[1])))
+    def advance(self) -> None:
+        new_pos = (self.model.LINE_POS, self.pos[1] + self.speed)
+        self.model.grid.move_agent(self, new_pos)
