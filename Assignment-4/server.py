@@ -18,9 +18,8 @@ def agent_portrayal(agent):
 
 height, width = 100, 100
 populations = [
-    PopulationConfiguration("red", 2000, 0.5),
-    PopulationConfiguration("blue", 2000, 0.5),
-    PopulationConfiguration("green", 2000, 0.5)
+    PopulationConfiguration("red", 4000, 0.375),
+    PopulationConfiguration("blue", 4000, 0.75)
 ]
 neighborhood_radius = 2
 
