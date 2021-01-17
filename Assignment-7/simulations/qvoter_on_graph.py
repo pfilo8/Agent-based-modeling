@@ -4,7 +4,7 @@ import networkx as nx
 VOTE = 'vote'
 
 
-def qvoter_model_on_graph(G, p, q, eps=0.01, T=1000):
+def qvoter_model_on_graph(G, p, q, f, eps=0.01, T=1000):
     N = len(G.nodes())
     G = init_opinion(G)
 
@@ -15,7 +15,8 @@ def qvoter_model_on_graph(G, p, q, eps=0.01, T=1000):
             spinson = get_random_spinson(G)
 
             if random.random() < p:
-                G = set_node_opinion(G, spinson, random.choice([-1, 1]))
+                if random.random() < f:
+                    G = set_node_opinion(G, spinson, -get_node_opinion(G, spinson))
             else:
                 neighbours = get_neighbors(G, spinson)
                 panel = get_panel(neighbours, q)

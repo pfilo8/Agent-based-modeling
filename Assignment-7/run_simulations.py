@@ -13,9 +13,9 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 PATH_BASEDIR = Path('results')
 
-P = np.arange(0, 0.52, 0.02)
-Q = [3, 4]
-EPS = [0.2, 0.3, 0.4, 0.5]
+P = np.arange(0, 1.05, 0.05)
+Q = [4] 
+F = [0.2, 0.3, 0.4, 0.5]
 N_STEPS = 100
 GRAPHS = {
     "complete": {
@@ -27,7 +27,7 @@ GRAPHS = {
 }
 
 
-def calculate(p, q, eps, graph):
+def calculate(p, q, f, graph):
     logging.info(f"Current graph: {graph}, current p: {p}")
 
     current_path = Path(PATH_BASEDIR).joinpath(f"{graph}").joinpath(f"q-{q}").joinpath(f"p-{p}")
@@ -38,7 +38,7 @@ def calculate(p, q, eps, graph):
         args = GRAPHS[graph]['args']
 
         g = generator(**args)
-        results = qvoter_model_on_graph(g, p, q, eps)
+        results = qvoter_model_on_graph(g, p, q, f)
         results = pd.DataFrame(results)
         results_path = current_path.joinpath(f'{i}.csv')
         results.to_csv(results_path, index=False)
@@ -48,8 +48,8 @@ PATH_BASEDIR.mkdir(parents=True, exist_ok=True)
 
 pool = mp.Pool(processes=8)
 
-for p, q, eps, graph in product(P, Q, EPS, GRAPHS):
-    pool.apply_async(calculate, args=(p, q, eps, graph))
+for p, q, f, graph in product(P, Q, F, GRAPHS):
+    pool.apply_async(calculate, args=(p, q, f, graph))
 
 pool.close()
 pool.join()
