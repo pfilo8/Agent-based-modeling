@@ -8,8 +8,6 @@ def qvoter_model_on_graph(G, p, q, f, eps=0.01, T=1000):
     N = len(G.nodes())
     G = init_opinion(G)
 
-    history = [get_network_opinions(G)]
-
     for _ in range(T):
         for _ in range(N):
             spinson = get_random_spinson(G)
@@ -27,8 +25,8 @@ def qvoter_model_on_graph(G, p, q, f, eps=0.01, T=1000):
                 else:
                     if random.random() < eps:
                         G = set_node_opinion(G, spinson, -get_node_opinion(G, spinson))
-        history.append(get_network_opinions(G))
-    return history
+
+    return [get_network_opinions(G)]
 
 
 def init_opinion(G):
