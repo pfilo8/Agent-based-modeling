@@ -30,7 +30,7 @@ GRAPHS = {
 def calculate(p, q, f, graph):
     logging.info(f"Current graph: {graph}, current p: {p}")
 
-    current_path = Path(PATH_BASEDIR).joinpath(f"{graph}").joinpath(f"q-{q}").joinpath(f"p-{p}")
+    current_path = Path(PATH_BASEDIR).joinpath(f"{graph}").joinpath(f"q-{q}").joinpath(f"p-{p}").joinpath(f"f-{f}")
     current_path.mkdir(parents=True, exist_ok=True)
 
     for i in range(N_STEPS):
