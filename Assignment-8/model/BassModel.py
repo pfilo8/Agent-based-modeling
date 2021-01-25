@@ -1,16 +1,22 @@
 import numpy as np
 
 from mesa import Model
+from mesa.space import Grid
 from mesa.time import SimultaneousActivation
 
 from agent.Customer import Customer
 
+
 class BassModel(Model):
+    LINE_HEIGHT = 1
+    LINE_POS = 0
+
     def __init__(self, p: float, q: float, n: int, max_iteration: int = 1000):
         super().__init__()
         self.p = p
         self.q = q
 
+        self.grid = Grid(n, self.LINE_HEIGHT, torus=True)
         self.schedule = SimultaneousActivation(self)
         self.init_agents(n)
 
@@ -21,7 +27,9 @@ class BassModel(Model):
 
     def init_agents(self, n):
         for i in range(n):
-            self.schedule.add(Customer(i, self))
+            agent = Customer(i, self)
+            self.schedule.add(agent)
+            self.grid.place_agent(agent, (i, self.LINE_POS))
 
     def calculate_f_t(self):
         return np.mean([1 if agent.state else 0 for agent in self.schedule.agents])
