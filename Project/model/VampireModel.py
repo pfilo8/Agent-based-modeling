@@ -9,7 +9,7 @@ from utils.statistics import compute_vampires
 class VampireModel(Model):
     def __init__(self, n_roots=10, root_size=15, hunt_probability=0.93, food_sharing=False, reproduction=False,
                  reproduction_probability=0.1, vampire_type=SimpleVampire, smart_vampire_strategies_prob=None,
-                 max_iteration=1000):
+                 min_motivation=-999, max_motivation=999, max_iteration=1000):
 
         self.hunt_probability = hunt_probability
         self.food_sharing = food_sharing
@@ -17,14 +17,19 @@ class VampireModel(Model):
         self.reproduction_probability = reproduction_probability
         self.vampire_type = vampire_type
         self.smart_vampire_strategies_prob = smart_vampire_strategies_prob
-        self.schedule = RandomActivation(self)
+        self.min_motivation = min_motivation
+        self.max_motivation = max_motivation
 
+        self.schedule = RandomActivation(self)
         self.running = True
         self.iteration = 0
         self.max_iteration = max_iteration
 
         self.init_agents(n_roots, root_size)
-        self.datacollector = DataCollector(model_reporters={"Bats": compute_vampires})
+        self.datacollector = DataCollector(
+            model_reporters={"Bats": compute_vampires},
+            agent_reporters={"Motivation": lambda a: a.motivation if hasattr(a, 'motivation') else None}
+        )
 
     def init_agents(self, n_roots, root_size):
         for root_id in range(n_roots):

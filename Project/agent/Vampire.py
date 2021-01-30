@@ -59,11 +59,11 @@ class SimpleVampire(Vampire):
 
 
 class SmartVampire(Vampire):
-    STRATEGY_CHEATERS = 'C'
-    STRATEGY_FAIR = 'F'
-    STRATEGY_MARTYRS = 'M'
-    STRATEGY_GENEROUS = 'G'
-    STRATEGY_PRUDENT = 'P'
+    STRATEGY_CHEATERS = 'Cheater'
+    STRATEGY_FAIR = 'Fair'
+    STRATEGY_MARTYRS = 'Martyrs'
+    STRATEGY_GENEROUS = 'Generous'
+    STRATEGY_PRUDENT = 'Prudent'
     STRATEGIES = [STRATEGY_CHEATERS, STRATEGY_FAIR, STRATEGY_GENEROUS, STRATEGY_MARTYRS, STRATEGY_PRUDENT]
 
     def __init__(self, id, model, root_id):
@@ -104,9 +104,16 @@ class SmartVampire(Vampire):
 
 
 class SmartDynamicVampire(Vampire):
-    def __init__(self, id, model, root_id):
+    def __init__(self, id, model, root_id, motivation=None):
         super().__init__(id, model, root_id)
-        self.motivation = np.random.randint(-3, 4)
+        self.motivation = np.random.randint(-4, 6) if not motivation else motivation
+
+    def step(self):
+        self.perform_hunt()
+        shared_food = self.perform_food_sharing()
+        self.motivation = max(min(self.motivation, self.model.max_motivation), self.model.min_motivation)
+        self.perform_reproduction(shared_food)
+        self.survival_time -= 12
 
     def share_food(self, other):
         if other.motivation < -2:  # Cheater
@@ -147,3 +154,10 @@ class SmartDynamicVampire(Vampire):
             return True
         self.motivation -= 1
         return False
+
+    def perform_reproduction(self, shared_food):
+        if self.model.reproduction and shared_food:
+            if random.random() < self.model.reproduction_probability:
+                id = max([agent.unique_id[1] for agent in self.get_family()]) + 1
+                baby_vampire = self.model.vampire_type((self.root_id, id), self.model, self.root_id, -1)
+                self.model.schedule.add(baby_vampire)
