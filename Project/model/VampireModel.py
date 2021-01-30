@@ -8,12 +8,13 @@ from utils.statistics import compute_vampires
 
 class VampireModel(Model):
     def __init__(self, n_roots=10, root_size=15, hunt_probability=0.93, food_sharing=False, reproduction=False,
-                 vampire_type=SimpleVampire, smart_vampire_strategies_prob=None,
+                 reproduction_probability=0.1, vampire_type=SimpleVampire, smart_vampire_strategies_prob=None,
                  max_iteration=1000):
 
         self.hunt_probability = hunt_probability
         self.food_sharing = food_sharing
         self.reproduction = reproduction
+        self.reproduction_probability = reproduction_probability
         self.vampire_type = vampire_type
         self.smart_vampire_strategies_prob = smart_vampire_strategies_prob
         self.schedule = RandomActivation(self)

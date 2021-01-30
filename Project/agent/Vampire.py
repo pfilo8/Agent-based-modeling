@@ -37,7 +37,7 @@ class Vampire(Agent):
 
     def perform_reproduction(self, shared_food):
         if self.model.reproduction and shared_food:
-            if random.random() < 0.95:
+            if random.random() < self.model.reproduction_probability:
                 id = max([agent.unique_id[1] for agent in self.get_family()]) + 1
                 baby_vampire = self.model.vampire_type((self.root_id, id), self.model, self.root_id)
                 self.model.schedule.add(baby_vampire)
