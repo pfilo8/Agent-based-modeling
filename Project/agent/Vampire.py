@@ -3,6 +3,10 @@ import numpy as np
 
 from mesa import Agent
 
+# [STRATEGY_CHEATERS, STRATEGY_FAIR, STRATEGY_GENEROUS, STRATEGY_MARTYRS, STRATEGY_PRUDENT]
+SMART_VAMPIRE_STRATEGIES_PROB = [0.25, 0.25, 0.125, 0.25, 0.125]
+
+
 class Vampire(Agent):
     def __init__(self, id, model, root_id):
         super().__init__(id, model)
@@ -18,7 +22,7 @@ class Vampire(Agent):
         self.survival_time -= 12
 
     def get_family(self):
-        return [agent for agent in self.model.schedule.agents if agent.root_id == self.root_id] 
+        return [agent for agent in self.model.schedule.agents if agent.root_id == self.root_id]
 
     def hunt(self):
         if random.random() < self.model.hunt_probability:
@@ -28,12 +32,11 @@ class Vampire(Agent):
 
     def is_dead(self):
         return self.survival_time <= 0
-    
+
     def share_food(self, other):
         raise NotImplementedError
 
 
-           
 class SimpleVampire(Vampire):
     def share_food(self, other):
         if other.survival_time >= 48:
@@ -41,7 +44,6 @@ class SimpleVampire(Vampire):
             self.survival_time += 6
 
 
-        
 class SmartVampire(Vampire):
     STRATEGY_CHEATERS = 'C'
     STRATEGY_FAIR = 'F'
@@ -49,11 +51,10 @@ class SmartVampire(Vampire):
     STRATEGY_GENEROUS = 'G'
     STRATEGY_PRUDENT = 'P'
     STRATEGIES = [STRATEGY_CHEATERS, STRATEGY_FAIR, STRATEGY_GENEROUS, STRATEGY_MARTYRS, STRATEGY_PRUDENT]
-    STRATEGIES_PROB = [0.25, 0.25, 0.125, 0.25, 0.125]
 
     def __init__(self, id, model, root_id):
         super().__init__(id, model, root_id)
-        self.motivation = np.random.choice(self.STRATEGIES, p = self.STRATEGIES_PROB)
+        self.motivation = np.random.choice(self.STRATEGIES, p=self.model.smart_vampire_strategies_prob)
 
     def share_food(self, other):
         if other.motivation == other.STRATEGY_CHEATERS:
@@ -79,5 +80,43 @@ class SmartVampire(Vampire):
             if other.survival_time >= 48:
                 other.survival_time -= 6
                 self.survival_time += 6
-            
 
+
+class SmartDynamicVampire(Vampire):
+    def __init__(self, id, model, root_id):
+        super().__init__(id, model, root_id)
+        self.motivation = np.random.randint(-3, 4)
+
+    def share_food(self, other):
+        if other.motivation < -2:  # Cheater
+            self.motivation -= 1
+        elif -2 <= other.motivation < 0:  # Prudent
+            if other.survival_time >= 48:
+                other.survival_time -= 6
+                self.survival_time += 6
+                self.motivation += 1
+            self.motivation -= 1
+        elif 0 <= other.motivation <= 1:  # Fair
+            if other.survival_time >= 48:
+                other.survival_time -= 12
+                self.survival_time += 12
+                self.motivation += 1
+            elif other.survival_time >= 24:
+                other.survival_time -= 6
+                self.survival_time += 6
+                self.motivation += 1
+            self.motivation -= 1
+        elif 1 < other.motivation <= 4:  # Generous
+            if other.survival_time >= 48:
+                other.survival_time -= 24
+                self.survival_time += 24
+                self.motivation += 1
+            elif other.survival_time >= 24:
+                other.survival_time -= 12
+                self.survival_time += 12
+                self.motivation += 1
+            other.motivation -= 1
+        elif other.motivation > 4:  # Martyr
+            other.survival_time -= 12
+            self.survival_time += 12
+            self.motivation += 1
