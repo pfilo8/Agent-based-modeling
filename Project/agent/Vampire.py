@@ -30,7 +30,7 @@ class Vampire(Agent):
 
     def perform_food_sharing(self):
         if self.model.food_sharing:
-            if self.survival_time <= 12:
+            if self.survival_time <= 24:
                 group = range(self.model.n_roots)
                 prob = np.ones(self.model.n_roots)
                 prob[self.root_id] = prob[self.root_id] * (self.model.n_roots - 1) * 9
@@ -124,7 +124,7 @@ class SmartDynamicVampire(Vampire):
 
     def share_food(self, other):
         if other.motivation < -2:  # Cheater
-            self.motivation -= 1
+            self.motivation -= 2
             return False
         elif -2 <= other.motivation < 0:  # Prudent
             if other.survival_time >= 48:
