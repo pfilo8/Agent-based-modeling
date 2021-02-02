@@ -113,7 +113,7 @@ class SmartVampire(Vampire):
 class SmartDynamicVampire(Vampire):
     def __init__(self, id, model, root_id, motivation=None):
         super().__init__(id, model, root_id)
-        self.motivation = np.random.randint(-4, 6) if not motivation else motivation
+        self.motivation = np.random.randint(-4, 7) if not motivation else motivation
 
     def step(self):
         self.perform_hunt()
@@ -124,6 +124,7 @@ class SmartDynamicVampire(Vampire):
 
     def share_food(self, other):
         if other.motivation < -2:  # Cheater
+            self.motivation -= 1
             return False
         elif -2 <= other.motivation < 0:  # Prudent
             if other.survival_time >= 48:
@@ -131,7 +132,6 @@ class SmartDynamicVampire(Vampire):
                 self.survival_time += 6
                 self.motivation += 1
                 return True
-            return False
         elif 0 <= other.motivation <= 1:  # Fair
             if other.survival_time >= 48:
                 other.survival_time -= 12
