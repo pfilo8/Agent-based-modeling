@@ -34,10 +34,10 @@ class Vampire(Agent):
                 group = range(self.model.n_roots)
                 prob = np.ones(self.model.n_roots)
                 prob[self.root_id] = prob[self.root_id] * (self.model.n_roots - 1) * 9
-                prob = prob/np.sum(prob)
+                prob = prob / np.sum(prob)
                 group_id = np.random.choice(group, p=prob)
                 group_member = self.get_root(group_id)
-                if len(group_member)>0:
+                if len(group_member) > 0:
                     other = random.choice(group_member)
                     return self.share_food(other)
         return False
@@ -46,7 +46,8 @@ class Vampire(Agent):
         if self.model.reproduction and shared_food:
             if random.random() < self.model.reproduction_probability:
                 id = max([agent.unique_id[1] for agent in self.get_root(self.root_id)]) + 1
-                baby_vampire = self.model.vampire_type((self.root_id, id), self.model, random.choice(range(self.model.n_roots)))
+                baby_vampire = self.model.vampire_type((self.root_id, id), self.model,
+                                                       random.choice(range(self.model.n_roots)))
                 self.model.schedule.add(baby_vampire)
 
     def is_dead(self):
@@ -124,7 +125,7 @@ class SmartDynamicVampire(Vampire):
 
     def share_food(self, other):
         if other.motivation < -2:  # Cheater
-            self.motivation -= 2
+            self.motivation -= 1
             return False
         elif -2 <= other.motivation < 0:  # Prudent
             if other.survival_time >= 48:
@@ -166,5 +167,6 @@ class SmartDynamicVampire(Vampire):
         if self.model.reproduction and shared_food:
             if random.random() < self.model.reproduction_probability:
                 id = max([agent.unique_id[1] for agent in self.get_root(self.root_id)]) + 1
-                baby_vampire = self.model.vampire_type((self.root_id, id), self.model, random.choice(range(self.model.n_roots)), -2)
+                baby_vampire = self.model.vampire_type((self.root_id, id), self.model,
+                                                       random.choice(range(self.model.n_roots)), -2)
                 self.model.schedule.add(baby_vampire)
