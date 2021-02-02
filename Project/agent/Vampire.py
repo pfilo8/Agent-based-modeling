@@ -19,8 +19,8 @@ class Vampire(Agent):
         self.perform_reproduction(shared_food)
         self.survival_time -= 12
 
-    def get_family(self):
-        return [agent for agent in self.model.schedule.agents if agent.root_id == self.root_id]
+    def get_root(self, root):
+        return [agent for agent in self.model.schedule.agents if agent.root_id == root]
 
     def perform_hunt(self):
         if random.random() < self.model.hunt_probability:
@@ -31,15 +31,22 @@ class Vampire(Agent):
     def perform_food_sharing(self):
         if self.model.food_sharing:
             if self.survival_time <= 12:
-                other = random.choice(self.get_family())
-                return self.share_food(other)
+                group = range(self.model.n_roots)
+                prob = np.ones(self.model.n_roots)
+                prob[self.root_id] = prob[self.root_id] * (self.model.n_roots - 1) * 9
+                prob = prob/np.sum(prob)
+                group_id = np.random.choice(group, p=prob)
+                group_member = self.get_root(group_id)
+                if len(group_member)>0:
+                    other = random.choice(group_member)
+                    return self.share_food(other)
         return False
 
     def perform_reproduction(self, shared_food):
         if self.model.reproduction and shared_food:
             if random.random() < self.model.reproduction_probability:
-                id = max([agent.unique_id[1] for agent in self.get_family()]) + 1
-                baby_vampire = self.model.vampire_type((self.root_id, id), self.model, self.root_id)
+                id = max([agent.unique_id[1] for agent in self.get_root(self.root_id)]) + 1
+                baby_vampire = self.model.vampire_type((self.root_id, id), self.model, random.choice(range(self.model.n_roots)))
                 self.model.schedule.add(baby_vampire)
 
     def is_dead(self):
@@ -158,6 +165,6 @@ class SmartDynamicVampire(Vampire):
     def perform_reproduction(self, shared_food):
         if self.model.reproduction and shared_food:
             if random.random() < self.model.reproduction_probability:
-                id = max([agent.unique_id[1] for agent in self.get_family()]) + 1
-                baby_vampire = self.model.vampire_type((self.root_id, id), self.model, self.root_id, -1)
+                id = max([agent.unique_id[1] for agent in self.get_root(self.root_id)]) + 1
+                baby_vampire = self.model.vampire_type((self.root_id, id), self.model, random.choice(range(self.model.n_roots)), -2)
                 self.model.schedule.add(baby_vampire)
